@@ -1,0 +1,70 @@
+version: "3"
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:11
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=test_db
+    volumes:
+      - ./init/sql:/docker-entrypoint-initdb.d
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "9001:80"
+    depends_on:
+      - postgres
+
+  mongo:
+    image: mongo
+    container_name: "mongo"
+    ports:
+      - 27017:27017
+
+  mongo-express:
+    image: mongo-express
+    ports:
+      - "9002:8081"
+    depends_on:
+      - mongo
+
+  users:
+    image: taller2.users
+    build:
+      context: ./users
+    environment:
+      - PORT=80 
+      - MONGODB_URL=mongodb://mongo/users
+    ports:
+      - 8080:80
+    volumes:
+      - ./users/src:/opt/app/src
+    entrypoint: 'sh -c "sleep 10 && yarn start"'
+    depends_on:
+      - mongo
+
+  heroes:
+    image: taller2.heroes
+    build:
+      context: ./heroes
+    environment:
+      - PORT=80 
+      - DATABASE_URL=postgresql://postgres:postgres@postgres/heroes 
+      - USERS_HOST=http://users/users
+    ports:
+      - 8081:80
+    volumes:
+      - ./heroes/src:/opt/app/src
+    entrypoint: 'sh -c "sleep 10 && poetry run uvicorn main:app --port $$PORT --host 0.0.0.0 --debug"'
+    depends_on:
+      - postgres
+      - users
+
