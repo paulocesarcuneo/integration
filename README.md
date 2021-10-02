@@ -6,6 +6,9 @@ cada una con su propio repositorio, y ejecutar el sistema usando docker-compose.
 Los submodules son el equivalente de symlinks a repositorios, esto nos permite tener un repo por app, 
 y al mismo tiempo tener repo con todas las apps.
 
+* https://git-scm.com/book/en/v2/Git-Tools-Submodules
+* https://docs.docker.com/compose/
+
 ## Init - Clone de repositorios
 Al clonarse el repo por primera vez deben ejecutarse init y update de los submodulos.
 Esto solo necesario hacerlo una vez.
