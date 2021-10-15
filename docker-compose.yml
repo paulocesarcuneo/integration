@@ -63,7 +63,7 @@ services:
       - 8081:80
     volumes:
       - ./heroes/src:/opt/app/src
-    entrypoint: 'sh -c "sleep 10 && poetry run uvicorn main:app --port $$PORT --host 0.0.0.0 --debug"'
+    entrypoint: 'sh -c "sleep 10 && poetry run alembic upgrade head && poetry run uvicorn main:app --port $$PORT --host 0.0.0.0 --debug"'
     depends_on:
       - postgres
       - users
